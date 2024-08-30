@@ -20,7 +20,7 @@ export const CONNECT_DB = async () => {
   await mongoClientInstance.connect()
   TrelloDatabaseInstance = mongoClientInstance.db(env.DATABASE_NAME)
 }
-export const GET_DB = () => {
+export const GET_DB = async () => {
   if (!TrelloDatabaseInstance) throw new Error('Please call CONNECT_DB first')
   return TrelloDatabaseInstance
 }
