@@ -13,5 +13,5 @@ Router.get ('/status', (req, res) => {
     message: 'Api is running!'
   })
 })
-Router.use('/board', BoardRoute)
+Router.use('/boards', BoardRoute)
 export const APIs_V1 = Router
