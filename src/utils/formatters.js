@@ -1,4 +1,4 @@
-
+//
 export const slugify = (val) => {
   if (!val) return ''
   return String(val)

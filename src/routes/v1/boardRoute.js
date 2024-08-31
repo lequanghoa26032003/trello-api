@@ -14,6 +14,10 @@ Router.route('/')
       message: 'Board Routes'
     })
   })
-  .post( boardValidation.createNew,boardController.createNew )
+  .post( boardValidation.createNew, boardController.createNew )
+
+  Router.route('/:id')
+  .get(boardController.getDetails)
+  .put() // Update
 
 export const BoardRoute = Router
