@@ -1,9 +1,3 @@
-/* eslint-disable no-console */
-/**
- * Updated by trungquandev.com's author on August 17 2023
- * YouTube: https://youtube.com/@trungquandev
- * "A bit of fragrance clings to the hand that gives flowers!"
- */
 
 import express from 'express'
 import cors from 'cors'
@@ -12,11 +6,12 @@ import { CONNECT_DB, COLSE_DB } from '~/config/mongodb.js'
 import { env } from '~/config/environment.js'
 import { APIs_V1 } from '~/routes/v1/index.js'
 import { errorHandlingMiddleware } from '~/middlewares/errorHandlingMiddleware.js'
+import { corsOptions } from '~/config/cors'
 
 const START_SERVER = () => {
 
   const app = express()
-  app.use(cors())
+  app.use(cors(corsOptions))
 
   app.use(express.json())
 
