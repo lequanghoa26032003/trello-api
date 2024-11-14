@@ -29,11 +29,14 @@ const START_SERVER = () => {
 
 ( async () => {
   try {
+    // eslint-disable-next-line no-console
     console.log('Connecting to MongoDB...')
     await CONNECT_DB()
+    // eslint-disable-next-line no-console
     console.log('Connected to MongoDB!')
     START_SERVER()
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error(error)
     process.exit(0)
   }
