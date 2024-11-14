@@ -2,6 +2,7 @@
 import { StatusCodes } from 'http-status-codes'
 import ApiError from '~/utils/ApiError'
 import { boardService } from '~/services/boardService'
+import { boardRoute } from '~/routes/v1/boardRoute'
 const createNew = async (req, res, next) => {
   try {
     const createBoard= await boardService.createNew(req.body)
@@ -20,7 +21,17 @@ const getDetails = async (req, res, next) => {
     next(error)
   }
 }
+const update = async (req, res, next) => {
+  try {
+    const boardId = req.params.id
+    const updatedBoard= await boardService.update(boardId, req.body)
+    res.status(StatusCodes.OK).json(updatedBoard)
+  } catch (error) {
+    next(error)
+  }
+}
 export const boardController = {
   createNew,
-  getDetails
+  getDetails,
+  update
 }

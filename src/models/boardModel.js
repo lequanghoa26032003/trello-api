@@ -21,6 +21,7 @@ const BOARD_COLLECTION_SCHEMA = Joi.object({
   updateAt: Joi.date().timestamp('javascript').default(null),
   _destroy: Joi.boolean().default(false)
 })
+const INVALID_UPDATE_FILELDS = ['_id', 'createdAt']
 const validateBeforeCreate = async ( data ) => {
   return await BOARD_COLLECTION_SCHEMA.validateAsync(data, { abortEarly: false })
 }
@@ -37,7 +38,7 @@ const createNew = async ( data ) => {
 const findOneById = async ( id ) => {
   try {
     const db = await GET_DB()
-    const result = await db.collection(BOARD_COLLECTION_NAME).findOne({ _id:  id })
+    const result = await db.collection(BOARD_COLLECTION_NAME).findOne({ _id:  new ObjectId.cacheHexString(id) })
     return result
   } catch (error) {
     throw new Error(error)
@@ -69,12 +70,42 @@ const getDetails = async ( id ) => {
     throw new Error(error)
   }
 }
-
+const pushColumnOrderIds = async (column) => {
+  try {
+    const db = await GET_DB()
+    const result = await db.collection(BOARD_COLLECTION_NAME).findOneAndUpdate(
+      { _id: new ObjectId(column.boardId) },
+      { $push: { columnOrderIds: new ObjectId(column._id) } },
+      { returnDocument: 'after' }
+    )
+    return result
+  }
+  catch (error) { throw error }
+}
+const update = async (boardId, updateData) => {
+  try {
+    Object.keys(updateData).forEach( fieldName => {
+      if (INVALID_UPDATE_FILELDS.includes(fieldName)) {
+        delete updateData[fieldName]
+      }
+    })
+    const db = await GET_DB()
+    const result = await db.collection(BOARD_COLLECTION_NAME).findOneAndUpdate(
+      { _id: new ObjectId(boardId) },
+      { $set: updateData },
+      { returnDocument: 'after' }
+    )
+    return result
+  }
+  catch (error) { throw error }
+}
 export const boardModel ={
   BOARD_COLLECTION_NAME,
   BOARD_COLLECTION_SCHEMA,
   createNew,
   findOneById,
-  getDetails
+  getDetails,
+  pushColumnOrderIds,
+  update
 }
 
