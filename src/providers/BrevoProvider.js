@@ -20,7 +20,7 @@ const sendEmail = async (toEmail, customSubject, customHtmlContent) => {
 
     return await apiInstance.sendTransacEmail(sendSmtpEmail)
   } catch (error) {
-    console.log(error)
+    // console.log(error)
   }
 }
 export const BrevoProvider = {
