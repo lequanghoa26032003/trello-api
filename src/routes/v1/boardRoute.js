@@ -3,6 +3,7 @@ import express from 'express'
 import { StatusCodes } from 'http-status-codes'
 import { boardValidation } from '~/validations/boardValidation.js'
 import { boardController } from '~/controllers/boardController.js'
+import { authMiddlewares } from '~/middlewares/authMiddlewares.js'
 const Router = express.Router()
 Router.route('/')
   .get( (req, res) => {
@@ -10,11 +11,11 @@ Router.route('/')
       message: 'Board Routes'
     })
   })
-  .post( boardValidation.createNew, boardController.createNew )
+  .post(authMiddlewares.isAuthorized, boardValidation.createNew, boardController.createNew )
 Router.route('/:id')
-  .get(boardController.getDetails)
-  .put(boardValidation.update, boardController.update)
+  .get(authMiddlewares.isAuthorized, boardController.getDetails)
+  .put(authMiddlewares.isAuthorized, boardValidation.update, boardController.update)
 
 Router.route('/supports/moving_card')
-  .put(boardValidation.moveCardToDifferentColumn, boardController.moveCardToDifferentColumn)
+  .put(authMiddlewares.isAuthorized, boardValidation.moveCardToDifferentColumn, boardController.moveCardToDifferentColumn)
 export const BoardRoute = Router
