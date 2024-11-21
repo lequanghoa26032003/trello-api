@@ -16,6 +16,8 @@ const CARD_COLLECTION_SCHEMA = Joi.object({
   updatedAt: Joi.date().timestamp('javascript').default(null),
   _destroy: Joi.boolean().default(false)
 })
+const INVALID_UPDATE_FILELDS = ['_id', 'boardId', 'createdAt']
+
 const validateBeforeCreate = async ( data ) => {
   return await CARD_COLLECTION_SCHEMA.validateAsync(data, { abortEarly: false })
 }
@@ -37,7 +39,36 @@ const createNew = async ( data ) => {
 const findOneById = async ( id ) => {
   try {
     const db = await GET_DB()
-    const result = await db.collection(CARD_COLLECTION_NAME).findOne({ _id: id })
+    const result = await db.collection(CARD_COLLECTION_NAME).findOne({ _id: new ObjectId(id) })
+    return result
+  } catch (error) {
+    throw new Error(error)
+  }
+}
+const update = async (cardId, updateData) => {
+  try {
+    Object.keys(updateData).forEach( fieldName => {
+      if (INVALID_UPDATE_FILELDS.includes(fieldName)) {
+        delete updateData[fieldName]
+      }
+    })
+    if (updateData.columnId) {
+      updateData.columnId = new ObjectId(updateData.columnId)
+    }
+    const db = await GET_DB()
+    const result = await db.collection(CARD_COLLECTION_NAME).findOneAndUpdate(
+      { _id: new ObjectId(cardId) },
+      { $set: updateData },
+      { returnDocument: 'after' }
+    )
+    return result
+  }
+  catch (error) { throw error }
+}
+const deleteManyByColumnId = async (columnId) => {
+  try {
+    const db = await GET_DB()
+    const result = await db.collection(CARD_COLLECTION_NAME).deleteMany({ columnId: new ObjectId(columnId) })
     return result
   } catch (error) {
     throw new Error(error)
@@ -47,5 +78,7 @@ export const cardModel = {
   CARD_COLLECTION_NAME,
   CARD_COLLECTION_SCHEMA,
   createNew,
-  findOneById
+  findOneById,
+  update,
+  deleteManyByColumnId
 }

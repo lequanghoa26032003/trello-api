@@ -38,7 +38,7 @@ const createNew = async ( data ) => {
 const findOneById = async ( id ) => {
   try {
     const db = await GET_DB()
-    const result = await db.collection(BOARD_COLLECTION_NAME).findOne({ _id:  new ObjectId.cacheHexString(id) })
+    const result = await db.collection(BOARD_COLLECTION_NAME).findOne({ _id:  id } )
     return result
   } catch (error) {
     throw new Error(error)
@@ -49,7 +49,7 @@ const getDetails = async ( id ) => {
     const db = await GET_DB()
     const result = await db.collection(BOARD_COLLECTION_NAME).aggregate([
       { $match: {
-        _id: ObjectId.createFromHexString(id),
+        _id: new ObjectId(id),
         _destroy: false
       } },
       { $lookup:{
@@ -75,7 +75,19 @@ const pushColumnOrderIds = async (column) => {
     const db = await GET_DB()
     const result = await db.collection(BOARD_COLLECTION_NAME).findOneAndUpdate(
       { _id: new ObjectId(column.boardId) },
-      { $push: { columnOrderIds: new ObjectId(column._id) } },
+      { $push: { columnOrderIds:  new ObjectId(column._id) } },
+      { returnDocument: 'after' }
+    )
+    return result
+  }
+  catch (error) { throw error }
+}
+const pullColumnOrderIds = async (column) => {
+  try {
+    const db = await GET_DB()
+    const result = await db.collection(BOARD_COLLECTION_NAME).findOneAndUpdate(
+      { _id: new ObjectId(column.boardId) },
+      { $pull: { columnOrderIds:  new ObjectId(column._id) } },
       { returnDocument: 'after' }
     )
     return result
@@ -89,6 +101,9 @@ const update = async (boardId, updateData) => {
         delete updateData[fieldName]
       }
     })
+    if (updateData.columnOrderIds) {
+      updateData.columnOrderIds = updateData.columnOrderIds.map(_id => (new ObjectId(_id)) )
+    }
     const db = await GET_DB()
     const result = await db.collection(BOARD_COLLECTION_NAME).findOneAndUpdate(
       { _id: new ObjectId(boardId) },
@@ -106,6 +121,7 @@ export const boardModel ={
   findOneById,
   getDetails,
   pushColumnOrderIds,
-  update
+  update,
+  pullColumnOrderIds
 }
 

@@ -37,7 +37,7 @@ const createNew = async ( data ) => {
 const findOneById = async ( id ) => {
   try {
     const db = await GET_DB()
-    const result = await db.collection(COLUMN_COLLECTION_NAME).findOne({ _id: id })
+    const result = await db.collection(COLUMN_COLLECTION_NAME).findOne({ _id: new ObjectId(id) })
     return result
   } catch (error) {
     throw new Error(error)
@@ -51,7 +51,7 @@ const pushCardOrderIds = async (card) => {
       { $push: { cardOrderIds: new ObjectId(card._id) } },
       { returnDocument: 'after' }
     )
-    return result.value || null
+    return result
   }
   catch (error) { throw error }
 }
@@ -62,6 +62,10 @@ const update = async (columnId, updateData) => {
         delete updateData[fieldName]
       }
     })
+    if (updateData.cardOrderIds) {
+      updateData.cardOrderIds = updateData.cardOrderIds.map(_id => (new ObjectId(_id)) )
+    }
+
     const db = await GET_DB()
     const result = await db.collection(COLUMN_COLLECTION_NAME).findOneAndUpdate(
       { _id: new ObjectId(columnId) },
@@ -69,8 +73,18 @@ const update = async (columnId, updateData) => {
       { returnDocument: 'after' }
     )
     return result
+
   }
   catch (error) { throw error }
+}
+const deleteOneById = async ( id ) => {
+  try {
+    const db = await GET_DB()
+    const result = await db.collection(COLUMN_COLLECTION_NAME).deleteOne({ _id: new ObjectId(id) })
+    return result
+  } catch (error) {
+    throw new Error(error)
+  }
 }
 export const columnModel = {
   COLUMN_COLLECTION_NAME,
@@ -78,5 +92,6 @@ export const columnModel = {
   createNew,
   findOneById,
   pushCardOrderIds,
-  update
+  update,
+  deleteOneById
 }
