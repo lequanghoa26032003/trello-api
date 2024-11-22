@@ -6,7 +6,8 @@ import { cardModel } from '~/models/cardModel'
 
 import ApiError from '~/utils/ApiError'
 import { StatusCodes } from 'http-status-codes'
-import { clone, cloneDeep } from 'lodash'
+import { cloneDeep } from 'lodash'
+import { DEFAULT_PAGE, DEFAULT_ITEMS_PER_PAGE } from '~/utils/constants'
 const createNew = async (reqBody) => {
   try {
     const newBoard = {
@@ -60,9 +61,19 @@ const moveCardToDifferentColumn = async (reqBody) => {
     return { updateResult: 'Successfully' }
   } catch (error) { throw error }
 }
+
+const getBoards = async (userId, page, itemsPerPage) => {
+  try {
+    if (!page) page = DEFAULT_PAGE
+    if (!itemsPerPage) itemsPerPage = DEFAULT_ITEMS_PER_PAGE
+    const boards = await boardModel.getBoards(userId, parseInt(page, 10), parseInt(itemsPerPage, 10))
+    return boards
+  } catch (error) { throw error }
+}
 export const boardService = {
   createNew,
   getDetails,
   update,
-  moveCardToDifferentColumn
+  moveCardToDifferentColumn,
+  getBoards
 }
