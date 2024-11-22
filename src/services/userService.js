@@ -66,7 +66,7 @@ const login = async (reqBody) => {
       throw new ApiError(StatusCodes.NOT_ACCEPTABLE, 'Your Email or Password is incorrect')
     }
     // Thông tin đính kèm trong JWT Token
-    const userInfo = { id: existUser._id, email: existUser.email }
+    const userInfo = { _id: existUser._id, email: existUser.email }
     // Tạo 2 loại token, accessToken và refreshToken để trả về FE
     const accessToken = await JwtProvider.generateToken(
       userInfo,
