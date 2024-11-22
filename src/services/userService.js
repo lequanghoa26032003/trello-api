@@ -8,6 +8,8 @@ import { WEBSITE_DOMAIN } from '~/utils/constants'
 import { BrevoProvider } from '~/providers/BrevoProvider'
 import { env } from '~/config/environment.js'
 import { JwtProvider } from '~/providers/JwtProvider'
+import { uploadFileToCloudinary } from '~/providers/CloudinaryProvider'
+
 const createNew = async (reqBody) => {
   try {
     const existUser = await userModel.findOneByEmail(reqBody.email)
@@ -102,7 +104,7 @@ const refreshToken = async (clientRefreshToken) => {
     throw error
   }
 }
-const update = async (userId, reqBody) => {
+const update = async (userId, reqBody, userAvatarFile) => {
   try {
     const existUser = await userModel.findOneById(userId)
     if (!existUser) throw new ApiError(StatusCodes.NOT_FOUND, 'User not found!')
@@ -117,6 +119,13 @@ const update = async (userId, reqBody) => {
       updatedUser = await userModel.update(userId, {
         password: bcryptjs.hashSync(reqBody.new_password, 8)
       })
+    } else if (userAvatarFile) {
+      // upload file leen cloudinary
+      const uploadResult = await uploadFileToCloudinary.streamUpload(userAvatarFile.buffer, 'users')
+      // lưu lại url file ảnh vào db
+      updatedUser = await userModel.update(userId, {
+        avatar: uploadResult.secure_url
+      })
     } else {
       updatedUser = await userModel.update(existUser._id, reqBody)
     }
@@ -125,6 +134,7 @@ const update = async (userId, reqBody) => {
     throw error
   }
 }
+
 export const userService = {
   createNew,
   verifyAccount,
