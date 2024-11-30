@@ -68,7 +68,7 @@ const refreshToken = async (req, res, next) => {
 
 const update = async (req, res, next) => {
   try {
-    const userId = req.jwtDecoded.id
+    const userId = req.jwtDecoded._id
     const userAvatarFile = req.file
     // console.log('userAvatarFile:',userAvatarFile)
     const updateUser = await userService.update(userId, req.body, userAvatarFile)

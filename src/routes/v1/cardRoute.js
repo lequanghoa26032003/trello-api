@@ -8,5 +8,6 @@ import { authMiddlewares } from '~/middlewares/authMiddlewares.js'
 const Router = express.Router()
 Router.route('/')
   .post(authMiddlewares.isAuthorized, cardValidation.createNew, cardController.createNew)
-
+Router.route('/:id')
+  .put(authMiddlewares.isAuthorized, cardValidation.update, cardController.update)
 export const CardRoute = Router
