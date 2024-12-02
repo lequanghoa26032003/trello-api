@@ -6,6 +6,7 @@ import { ObjectId } from 'mongodb'
 import { BOARD_TYPES } from '~/utils/constants'
 import { columnModel } from './columnModel'
 import { cardModel } from './cardModel'
+import { userModel } from './userModel'
 import { pagingSkipValue } from '~/utils/algorithms'
 
 const BOARD_COLLECTION_NAME = 'boards'
@@ -81,7 +82,35 @@ const getDetails = async ( userId, boardId ) => {
         localField: '_id',
         foreignField: 'boardId',
         as: 'cards'
-      } }
+      } },
+      {
+        $lookup: {
+          from: userModel.USER_COLLECTION_NAME,
+          localField: 'ownerIds',
+          foreignField: '_id',
+          as: 'owners',
+          // pipeline trong lookup là để xử lý một hoặc nhiều luồng cần thiết
+          // $project để chỉ định vài field không muốn lấy về bằng cách gán nó giá trị 0
+          pipeline: [
+            {
+              $project: { 'password': 0, 'verifyToken': 0 }
+            }
+          ]
+        }
+      },
+      {
+        $lookup: {
+          from: userModel.USER_COLLECTION_NAME,
+          localField: 'memberIds',
+          foreignField: '_id',
+          as: 'members',
+          pipeline: [
+            {
+              $project: { 'password': 0, 'verifyToken': 0 }
+            }
+          ]
+        }
+      }
     ]).toArray()
     return result[0]||null
   } catch (error) {
