@@ -1,6 +1,5 @@
 
 import { StatusCodes } from 'http-status-codes'
-import ApiError from '~/utils/ApiError'
 import { columnService } from '~/services/columnService'
 const createNew = async (req, res, next) => {
   try {

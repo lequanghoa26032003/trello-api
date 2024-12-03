@@ -52,7 +52,7 @@ const createNew = async (userId, data ) => {
 const findOneById = async ( id ) => {
   try {
     const db = await GET_DB()
-    const result = await db.collection(BOARD_COLLECTION_NAME).findOne({ _id:  id } )
+    const result = await db.collection(BOARD_COLLECTION_NAME).findOne({ _id:  new ObjectId(id)} )
     return result
   } catch (error) {
     throw new Error(error)
