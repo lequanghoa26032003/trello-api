@@ -1,8 +1,6 @@
 
 import { StatusCodes } from 'http-status-codes'
-import ApiError from '~/utils/ApiError'
 import { boardService } from '~/services/boardService'
-import { boardRoute } from '~/routes/v1/boardRoute'
 const createNew = async (req, res, next) => {
   try {
     const userId = req.jwtDecoded._id
