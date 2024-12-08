@@ -162,7 +162,7 @@ const update = async (boardId, updateData) => {
   catch (error) { throw error }
 }
 
-const getBoards = async (userId, page, itemsPerPage) => {
+const getBoards = async (userId, page, itemsPerPage, queryFilters) => {
   try {
     const queryConditions = [
       { _destroy: false },
@@ -171,6 +171,16 @@ const getBoards = async (userId, page, itemsPerPage) => {
         { memberIds: { $all: [new ObjectId(userId)] } }
       ] }
     ]
+    // Xử lý filter cho từng trường hợp search Board (title, description,...)
+    if (queryFilters) {
+      //
+      Object.keys(queryFilters).forEach( key => {
+        // queryConditions.push({ [key]: { $regex: queryFilters[key] } })
+
+        queryConditions.push({ [key]: { $regex: new RegExp(queryFilters[key], 'i') } })
+
+      })
+    }
     const db = await GET_DB()
     const query = await db.collection(BOARD_COLLECTION_NAME).aggregate([
       { $match: { $and: queryConditions } },
