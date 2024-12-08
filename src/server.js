@@ -8,6 +8,9 @@ import { APIs_V1 } from '~/routes/v1/index.js'
 import { errorHandlingMiddleware } from '~/middlewares/errorHandlingMiddleware.js'
 import { corsOptions } from '~/config/cors'
 import cookieParser from 'cookie-parser'
+import socketIo from 'socket.io'
+import http from 'http'
+import { inviteUserToBoardSocket } from '~/sockets/inviteUserToBoardSocket'
 const START_SERVER = () => {
   const app = express()
 
@@ -24,8 +27,16 @@ const START_SERVER = () => {
   app.use('/v1', APIs_V1)
 
   app.use(errorHandlingMiddleware)
+  // Tạo một cái server mới bọc app của express để làm real-time với socket.io
+  const server = http.createServer(app)
+  // Khởi tạo biến io với server cà cors
+  const io = socketIo(server, { cors: corsOptions })
+  io.on('connection', (socket) => {
+    inviteUserToBoardSocket(socket)
+  })
 
-  app.listen(env.APP_PORT, env.APP_HOST, () => {
+  server.listen(env.APP_PORT, env.APP_HOST, () => {
+    // eslint-disable-next-line no-console
     console.log(`Hello ${env.AUTHOR}, I am running at http://${ env.APP_HOST }:${ env.APP_PORT }/`)
   })
   exitHook( () => {
