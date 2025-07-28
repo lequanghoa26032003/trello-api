@@ -1,7 +1,7 @@
 import Joi from 'joi'
 import { GET_DB } from '~/config/mongodb'
 import { ObjectId } from 'mongodb'
-import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE } from '~/utils/validators'
+import { OBJECT_ID_RULE, OBJECT_ID_RULE_MESSAGE, FIELD_REQUIRED_MESSAGE_RULE  } from '~/utils/validators'
 
 // Define Collection (name & schema)
 const COLUMN_COLLECTION_NAME = 'columns'
