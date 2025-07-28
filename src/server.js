@@ -34,11 +34,17 @@ const START_SERVER = () => {
   io.on('connection', (socket) => {
     inviteUserToBoardSocket(socket)
   })
-
-  server.listen(env.APP_PORT, env.APP_HOST, () => {
-    // eslint-disable-next-line no-console
-    console.log(`Hello ${env.AUTHOR}, I am running at http://${ env.APP_HOST }:${ env.APP_PORT }/`)
-  })
+  if (env.BUILD_MODE === 'production') {
+    server.listen(process.env.PORT, () => {
+      // eslint-disable-next-line no-console
+      console.log(`Hello ${env.AUTHOR}, I am running at PORT${ process.env.PORT }/`)
+    })
+  } else {
+    server.listen(env.LOCAL_DEV_APP_PORT, env.LOCAL_DEV_APP_HOST, () => {
+      // eslint-disable-next-line no-console
+      console.log(`Hello ${env.AUTHOR}, I am running at http://${ env.LOCAL_DEV_APP_HOST }:${ env.LOCAL_DEV_APP_PORT }/`)
+    })
+  }
   exitHook( () => {
     COLSE_DB()
   })
