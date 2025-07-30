@@ -1,5 +1,5 @@
 
-import { WEBSITE_DOMAIN } from '~/utils/constants'
+import { WHITELIST_DOMAINS } from '~/utils/constants'
 import { env } from '~/config/environment'
 import { StatusCodes } from 'http-status-codes'
 import ApiError from '~/utils/ApiError'
@@ -10,7 +10,7 @@ export const corsOptions = {
       return callback(null, true)
     }
 
-    if (WEBSITE_DOMAIN.includes(origin)) {
+    if (WHITELIST_DOMAINS.includes(origin)) {
       return callback(null, true)
     }
 
